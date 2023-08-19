@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+  gateway:
+    container_name: m1
+    build:
+      dockerfile: ./M1/Dockerfile
+    ports:
+    - 8080:8080
+    volumes:
+      - ./M1/:/usr/src/app
+    networks:
+      - green_api_test
+    env_file:
+      - ./.env
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq
+
+  microservice:
+    container_name: m2
+    build:
+      dockerfile: ./M2/Dockerfile
+    ports:
+    - 3001:3001
+    volumes:
+      - ./M2/:/usr/src/app
+    networks:
+      - green_api_test
+    env_file:
+      - ./.env
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq 
+      
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.12.2-management
+    hostname: rabbitmq
+    ports:
+      - 15672:15672
+    networks:
+      - green_api_test
+    env_file:
+      - ./.env
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+    restart: unless-stopped
+
+networks:
+  green_api_test:
+    driver: bridge
