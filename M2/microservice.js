@@ -1,10 +1,9 @@
-// импортируем класс MicroService из раннее установленного пакета micromq
 const MicroMQ = require('micromq');
 const reg = new RegExp("/*/");
 
 // создаем экземпляр класса MicroService
 const app = new MicroMQ({
-  // название микросервиса (оно должно быть таким же, как указано в Gateway)
+  // название микросервиса
   name: 'M2',
   // настройки rabbitmq
   rabbit: {
@@ -13,15 +12,45 @@ const app = new MicroMQ({
   },
 });
 
-// обрабатываем запрос
+// обрабатываем запросы
+//GET
 app.get(reg, (req, res) => {
+  console.log('GET REQUEST HANDLED')
   // отправляем json ответ
-  console.log('req in MCRSRV: ', req.method, req.path);
   res.json({
-    text: 'Hello world',
+    what: 'GET REQUEST HANDLED',
+    path: req.path
   });
 });
 
-// начинаем слушать очередь запросов
+//HEAD
+app.head(reg, (req, res) => {
+  console.log('HEAD REQUEST HANDLED')
+  // отправляем json ответ
+  res.json({});
+});
+
+//POST
+app.post(reg, (req, res) => {
+  console.log('POST REQUEST HANDLED')
+  // отправляем json ответ
+  res.json({
+    what: 'POST REQUEST HANDLED',
+    path: req.path,
+    body: req.body
+  });
+});
+
+//DELETE
+app.delete(reg, (req, res) => {
+  console.log('DELETE REQUEST HANDLED')
+  // отправляем json ответ
+  res.json({
+    what: 'DELETE REQUEST HANDLED',
+    path: req.path
+  });
+});
+
+//слушаем очередь запросов
 console.log('M2 Start');
 app.start();

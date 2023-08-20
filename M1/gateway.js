@@ -1,9 +1,8 @@
 const Gateway = require('micromq/gateway');
 const reg = new RegExp("/*/");
 
-// // создаем экземпляр класса Gateway
 const app = new Gateway({
-    // названия микросервисов, к которым мы будем обращаться
+    // названия микросервиса, куда будем обращаться
     microservices: ['M2'],
     // настройки rabbitmq
     rabbit: {
@@ -12,13 +11,32 @@ const app = new Gateway({
     },
   });
 
-  // принимаем GET /
+  // принимаем запросы 
+  //GET
   app.get(reg, async (req, res) => {
     // делегируем запрос в микросервис users
-    console.log('getted: ', req.method, req.url);
+    console.log(req.method, 'request have been recieved on M1');
     await res.delegate('M2');
   });
 
+  //HEAD
+  app.head(reg, async (req, res) => {
+    // делегируем запрос в микросервис users
+    console.log(req.method, 'request have been recieved on M1');
+    await res.delegate('M2');
+  });
+
+  //POST
+  app.post(reg, async (req, res) => {
+    console.log(req.method, 'request have been recieved on M1');
+    await res.delegate('M2')
+  })
+
+  //DELETE
+  app.delete(reg, async (req, res) => {
+    console.log(req.method, 'request have been recieved on M1');
+    await res.delegate('M2')
+  })
   
   console.log('port M1 =', process.env.M1_PORT);
   // начинаем слушать порт
